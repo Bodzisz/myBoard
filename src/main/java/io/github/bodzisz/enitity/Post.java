@@ -1,6 +1,7 @@
 package io.github.bodzisz.enitity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Entity
@@ -10,7 +11,9 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String Title;
+    @NotBlank(message = "Post title can not be empty")
+    private String title;
+    @NotBlank(message = "Post content can not be empty")
     private String content;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "post_id")
@@ -28,11 +31,11 @@ public class Post {
     }
 
     public String getTitle() {
-        return Title;
+        return title;
     }
 
     public void setTitle(String title) {
-        Title = title;
+        this.title = title;
     }
 
     public String getContent() {
@@ -50,4 +53,5 @@ public class Post {
     public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
+
 }

@@ -8,6 +8,22 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+
+    <style>
+        .biggerBottomPadding {
+            padding-bottom: 20px;
+        }
+        .biggerTopPadding {
+            padding-top: 20px;
+        }
+        .error {
+            color:red;
+        }
+
+        .BdRed {
+            border-color: red !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -37,6 +53,7 @@
 <hr>
 
 <div class="container">
+<div class="container">
 
     <h1 th:text="${post.title}" class="display-4"></h1>
 
@@ -46,6 +63,30 @@
 </div>
 <hr>
 
+<div class="container">
+    <h4>Comments</h4>
+
+    <div class="container border biggerBottomPadding">
+        <form action="#" th:action="@{/posts/{postId}/saveComment(postId=${post.id})}" th:object="${commentToAdd}"
+              method="post">
+            <p class="error" th:if="${#fields.hasAnyErrors()}" th:errors="*{content}"></p>
+            <div class="mb-3">
+                <label class="form-label">Content</label>
+                <input type="text" th:field="*{content}" th:errorclass="BdRed" class="form-control">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+    </div>
+
+    <div class="container biggerTopPadding">
+        <ul th:each="comment : ${post.comments}"  class="list-group" >
+            <li th:text="${comment.content}" class="list-group-item shadow rounded"></li>
+        </ul>
+    </div>
+
+</div>
+</div>
 
 </body>
 </html>

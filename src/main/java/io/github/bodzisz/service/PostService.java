@@ -1,8 +1,10 @@
 package io.github.bodzisz.service;
 
+import io.github.bodzisz.enitity.Comment;
 import io.github.bodzisz.enitity.Post;
 import io.github.bodzisz.repository.PostRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
