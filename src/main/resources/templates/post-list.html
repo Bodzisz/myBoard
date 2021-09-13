@@ -11,14 +11,16 @@
 </head>
 <body>
 
+<div class="p-3 mb-2 bg-dark text-white">
+    <h1 class="display-1">myBoard</h1>
+</div>
 
+    <div class="list-group">
 
-    <div class="all-classes-container">
-        <h1 class="display-1">myBoard</h1>
-        <hr>
-
-        <ul th:each="post : ${posts}" class="list-group" >
+        <ul th:each="post : ${posts}"  class="list-group" >
+            <a th:href="@{/posts/{id}(id=${post.id})}">
             <li th:text="${post.title}" class="list-group-item"></li>
+            </a>
         </ul>
 
     </div>
