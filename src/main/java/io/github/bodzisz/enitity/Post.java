@@ -2,6 +2,7 @@ package io.github.bodzisz.enitity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -15,6 +16,8 @@ public class Post {
     private String title;
     @NotBlank(message = "Post content can not be empty")
     private String content;
+    @Embedded
+    private Audit audit = new Audit();
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "post_id")
     private List<Comment> comments;
@@ -54,4 +57,11 @@ public class Post {
         this.comments = comments;
     }
 
+    public Audit getAudit() {
+        return audit;
+    }
+
+    public LocalDateTime getCreationTime() {
+        return audit == null? null : audit.getCreated();
+    }
 }

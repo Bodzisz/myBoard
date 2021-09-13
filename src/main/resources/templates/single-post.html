@@ -56,8 +56,10 @@
 <div class="container">
 
     <h1 th:text="${post.title}" class="display-4"></h1>
+    <small th:text="|Created on: ${post.creationTime}|" style="float: right"></small>
 
-    <div class="container-md container">
+
+    <div class="container-md container biggerTopPadding">
         <p th:text="${post.content}"></p>
     </div>
 </div>
