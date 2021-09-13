@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
@@ -14,6 +15,8 @@ public class Comment {
     private int id;
     @NotBlank(message = "Comment's content can not be empty")
     private String content;
+    @Embedded
+    private Audit audit = new Audit();
     @Column(name = "post_id")
     private int postId;
 
@@ -42,5 +45,9 @@ public class Comment {
 
     public void setPostId(int postId) {
         this.postId = postId;
+    }
+
+    public LocalDateTime getCreationTime() {
+        return audit == null? null : audit.getCreated();
     }
 }

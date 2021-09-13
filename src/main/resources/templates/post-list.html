@@ -54,7 +54,7 @@
 
         <ul th:each="post : ${posts}"  class="list-group" >
             <li  class="list-group-item shadow rounded">
-                <div id="textbox">
+                <div class="container">
                     <a th:href="@{/posts/{id}(id=${post.id})}" style="color: black">
                     <p th:text="${post.title}" class="alignleft"></p>
                     <p th:text="${post.getCreationTime()}" class="alignright"></p>

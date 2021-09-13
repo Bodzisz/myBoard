@@ -23,6 +23,13 @@
         .BdRed {
             border-color: red !important;
         }
+
+        .alignleft {
+            float: left;
+        }
+        .alignright {
+            float: right;
+        }
     </style>
 </head>
 <body>
@@ -83,7 +90,12 @@
 
     <div class="container biggerTopPadding">
         <ul th:each="comment : ${post.comments}"  class="list-group" >
-            <li th:text="${comment.content}" class="list-group-item shadow rounded"></li>
+            <li class="list-group-item shadow rounded">
+                <div class="container">
+                        <p th:text="${comment.content}" class="alignleft"></p>
+                    <small th:text="${comment.creationTime}" class="alignright"></small>
+                </div>
+            </li>
         </ul>
     </div>
 
