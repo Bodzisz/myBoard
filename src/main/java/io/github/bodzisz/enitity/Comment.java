@@ -17,8 +17,6 @@ public class Comment {
     private String content;
     @Embedded
     private Audit audit = new Audit();
-    @Column(name = "post_id")
-    private int postId;
 
     public Comment() {
     }
@@ -39,13 +37,6 @@ public class Comment {
         this.content = content;
     }
 
-    public int getPostId() {
-        return postId;
-    }
-
-    public void setPostId(int postId) {
-        this.postId = postId;
-    }
 
     public LocalDateTime getCreationTime() {
         return audit == null? null : audit.getCreated();

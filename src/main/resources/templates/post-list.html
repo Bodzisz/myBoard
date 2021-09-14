@@ -16,6 +16,12 @@
         .alignright {
             float: right;
         }
+        .allPadding {
+            padding: 20px;
+        }
+        .error {
+            color:red;
+        }
     </style>
 </head>
 <body>
@@ -51,6 +57,10 @@
 
 <div class="container">
     <div class="list-group">
+
+        <div th:if="${deleteMessage != null }" class="container error allPadding">
+            <span th:text="${deleteMessage}"></span>
+        </div>
 
         <ul th:each="post : ${posts}"  class="list-group" >
             <li  class="list-group-item shadow rounded">

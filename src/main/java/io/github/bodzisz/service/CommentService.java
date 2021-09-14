@@ -3,6 +3,7 @@ package io.github.bodzisz.service;
 import io.github.bodzisz.enitity.Comment;
 import io.github.bodzisz.enitity.Post;
 import io.github.bodzisz.repository.CommentRepository;
+import io.github.bodzisz.repository.PostRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,9 +22,9 @@ public class CommentService {
     }
 
     @Transactional
-    public void addComment(int postId, Comment comment) {
+    public void addComment(Post post, Comment comment) {
         comment.setId(0);
-        comment.setPostId(postId);
+        post.addComment(comment);
         commentRepository.save(comment);
     }
 }

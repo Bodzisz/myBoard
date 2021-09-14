@@ -1,5 +1,6 @@
 package io.github.bodzisz.enitity;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -7,11 +8,13 @@ import java.time.LocalDateTime;
 
 @Embeddable
 class Audit {
+    @Column(updatable = false)
     private LocalDateTime created;
     private LocalDateTime updated;
 
+
     @PrePersist
-    void prePersits() {
+    void prePersist() {
         created = LocalDateTime.now();
     }
 

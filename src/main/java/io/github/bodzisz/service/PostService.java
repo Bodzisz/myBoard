@@ -31,4 +31,8 @@ public class PostService {
     public void savePost(Post post) {
         repository.save(post);
     }
+
+    public void deleteById(int id) {
+        repository.deleteById(id);
+    }
 }

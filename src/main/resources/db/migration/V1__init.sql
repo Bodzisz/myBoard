@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS posts (
 CREATE TABLE IF NOT EXISTS comments (
     id int NOT NULL auto_increment,
     content varchar(5000),
-    post_id int NOT NULL,
+    post_id int DEFAULT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (post_id) REFERENCES posts(id)
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 );

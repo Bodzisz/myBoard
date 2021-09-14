@@ -56,11 +56,12 @@ public class PostController {
                                   BindingResult result,
                                   @PathVariable("id") int id,
                                   Model model) {
-        model.addAttribute("post", postService.findById(id));
+        Post post = postService.findById(id);
+        model.addAttribute("post", post);
         if(result.hasErrors()) {
             return "single-post";
         }
-        commentService.addComment(id, comment);
+        commentService.addComment(post, comment);
         return "redirect:/posts/" + id;
     }
 
@@ -68,5 +69,13 @@ public class PostController {
     public String updateForm(@PathVariable ("id") int id , Model model) {
         model.addAttribute("post", postService.findById(id));
         return "add-post-form";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable ("id") int id, Model model) {
+        postService.deleteById(id);
+        model.addAttribute("deleteMessage", "Post deleted!");
+        model.addAttribute("posts", postService.findAll());
+        return "post-list";
     }
 }

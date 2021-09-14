@@ -18,7 +18,7 @@ public class Post {
     private String content;
     @Embedded
     private Audit audit = new Audit();
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE})
     @JoinColumn(name = "post_id")
     private List<Comment> comments;
 
@@ -63,5 +63,13 @@ public class Post {
 
     public LocalDateTime getCreationTime() {
         return audit == null? null : audit.getCreated();
+    }
+
+    public LocalDateTime getUpdateTime() {
+        return audit == null? null : audit.getUpdated();
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
     }
 }
