@@ -21,11 +21,7 @@ public class PostService {
     }
 
     public Post findById(int id) {
-        Post post = (repository.findById(id)).orElse(null);
-        if(post == null) {
-            throw new RuntimeException("Post with given id not found" + id);
-        }
-        return post;
+        return (repository.findById(id)).orElseThrow(() -> new IllegalArgumentException("Post with given id not found " + id));
     }
 
     public void savePost(Post post) {

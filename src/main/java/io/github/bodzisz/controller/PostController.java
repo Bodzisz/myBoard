@@ -78,4 +78,13 @@ public class PostController {
         model.addAttribute("posts", postService.findAll());
         return "post-list";
     }
+
+    @GetMapping("/{postId}/deleteComment/{id}")
+    public String deleteComment(@PathVariable ("id") int id, @PathVariable ("postId") int postId, Model model) {
+        commentService.deleteComment(id);
+        model.addAttribute("deleteCommentMessage", "Comment deleted!");
+        model.addAttribute("post", postService.findById(postId));
+        model.addAttribute("commentToAdd", new Comment());
+        return "single-post";
+    }
 }
