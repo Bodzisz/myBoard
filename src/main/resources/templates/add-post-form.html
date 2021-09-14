@@ -46,7 +46,7 @@
 <hr>
 
 <div class="container">
-<form action="#" th:action="@{/posts/savePost}" th:object="${post}" method="post">
+<form action="#" th:action="@{/posts/savePost}" th:object="${post}" method="post" id="addPost">
     <p class="error" th:if="${#fields.hasAnyErrors()}" th:errors="*{all}"></p>
     <div class="mb-3">
         <label class="form-label">Post Title</label>
@@ -55,7 +55,8 @@
 
     <div class="mb-3">
         <label class="form-label">Content</label>
-        <input type="text" th:field="*{content}" th:errorclass="'BdRed'" class="form-control">
+        <textarea th:field="*{content}" th:errorclass="'BdRed'" class="form-control input-xl"
+                  form="addPost" rows="20" cols="80" wrap="hard"> </textarea>
     </div>
 
     <button type="submit" class="btn btn-primary">Submit</button>

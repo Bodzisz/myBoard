@@ -67,7 +67,7 @@
 
 
     <div class="container-md container biggerTopPadding">
-        <p th:text="${post.content}"></p>
+        <label th:text="${post.content}"></label>
     </div>
 </div>
 <hr>
@@ -77,11 +77,12 @@
 
     <div class="container border biggerBottomPadding">
         <form action="#" th:action="@{/posts/{postId}/saveComment(postId=${post.id})}" th:object="${commentToAdd}"
-              method="post">
+              method="post" id="addComment">
             <p class="error" th:if="${#fields.hasAnyErrors()}" th:errors="*{content}"></p>
             <div class="mb-3">
                 <label class="form-label">Content</label>
-                <input type="text" th:field="*{content}" th:errorclass="BdRed" class="form-control">
+                <textarea th:field="*{content}" th:errorclass="'BdRed'" class="form-control input-xl"
+                          form="addComment" rows="5" cols="80" wrap="hard"> </textarea>
             </div>
 
             <button type="submit" class="btn btn-primary">Add</button>
