@@ -31,4 +31,8 @@ public class PostService {
     public void deleteById(int id) {
         repository.deleteById(id);
     }
+
+    public List<Post> findAllByTitle(String title) {
+        return repository.findAllByTitleContains(title);
+    }
 }

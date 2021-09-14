@@ -4,6 +4,8 @@ import io.github.bodzisz.enitity.Comment;
 import io.github.bodzisz.enitity.Post;
 import io.github.bodzisz.service.CommentService;
 import io.github.bodzisz.service.PostService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,6 +18,7 @@ import javax.validation.Valid;
 public class PostController {
     private final PostService postService;
     private final CommentService commentService;
+    Logger logger = LoggerFactory.getLogger(PostController.class);
 
     public PostController(final PostService postService, CommentService commentService) {
         this.postService = postService;
@@ -25,6 +28,7 @@ public class PostController {
     @GetMapping
     public String showPosts(Model model) {
         model.addAttribute("posts", postService.findAll());
+        model.addAttribute("titleSearchPost", new Post());
         return "post-list";
     }
 
@@ -76,6 +80,7 @@ public class PostController {
         postService.deleteById(id);
         model.addAttribute("deleteMessage", "Post deleted!");
         model.addAttribute("posts", postService.findAll());
+        model.addAttribute("titleSearchPost", new Post());
         return "post-list";
     }
 
@@ -86,5 +91,15 @@ public class PostController {
         model.addAttribute("post", postService.findById(postId));
         model.addAttribute("commentToAdd", new Comment());
         return "single-post";
+    }
+
+    @GetMapping("/search")
+    public String searchByTitle(@RequestParam("title") String title, Model model) {
+        logger.info("Search for post with title: " + title);
+        model.addAttribute("posts", postService.findAllByTitle(title));
+        Post searchModel = new Post();
+        searchModel.setTitle(title);
+        model.addAttribute("titleSearchPost", searchModel);
+        return "post-list";
     }
 }

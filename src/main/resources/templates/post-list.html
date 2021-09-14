@@ -46,8 +46,9 @@
                     <a class="nav-link active" aria-current="page" th:href="@{/posts/addPostForm}">Add post</a>
                 </li>
             </ul>
-            <form class="d-flex">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <form action="#" th:action="@{/posts/search(title=*{title})}" th:object="${titleSearchPost}"
+                  method="get" class="d-flex">
+                <input th:field="*{title}"  class="form-control me-2" type="search" placeholder="Search by post title" aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
         </div>
