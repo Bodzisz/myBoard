@@ -48,6 +48,9 @@
 <div class="container">
 <form action="#" th:action="@{/posts/savePost}" th:object="${post}" method="post" id="addPost">
     <p class="error" th:if="${#fields.hasAnyErrors()}" th:errors="*{all}"></p>
+
+    <input type="hidden" th:field="*{id}">
+
     <div class="mb-3">
         <label class="form-label">Post Title</label>
         <input type="text" th:field="*{title}"  th:errorclass="'BdRed'" class="form-control">

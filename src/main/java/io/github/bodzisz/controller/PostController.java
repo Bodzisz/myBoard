@@ -63,4 +63,10 @@ public class PostController {
         commentService.addComment(id, comment);
         return "redirect:/posts/" + id;
     }
+
+    @GetMapping("/update/{id}")
+    public String updateForm(@PathVariable ("id") int id , Model model) {
+        model.addAttribute("post", postService.findById(id));
+        return "add-post-form";
+    }
 }
