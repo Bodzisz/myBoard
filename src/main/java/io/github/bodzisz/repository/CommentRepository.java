@@ -1,12 +1,15 @@
 package io.github.bodzisz.repository;
 
 import io.github.bodzisz.enitity.Comment;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+
 
 import java.util.List;
 
-@Repository
-public interface CommentRepository extends JpaRepository<Comment, Integer> {
+public interface CommentRepository {
 
+    List<Comment> findAll();
+
+    Comment save(Comment comment);
+
+    void deleteById(int id);
 }
