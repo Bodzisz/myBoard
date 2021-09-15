@@ -3,6 +3,9 @@ package io.github.bodzisz.service;
 import io.github.bodzisz.enitity.Comment;
 import io.github.bodzisz.enitity.Post;
 import io.github.bodzisz.repository.PostRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +19,8 @@ public class PostService {
         this.repository = repository;
     }
 
-    public List<Post> findAll() {
-        return repository.findAll();
+    public List<Post> findAllSorted() {
+        return repository.findAll(Sort.by(Sort.Direction.DESC, "Audit.created"));
     }
 
     public Post findById(int id) {

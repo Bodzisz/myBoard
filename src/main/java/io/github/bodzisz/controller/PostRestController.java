@@ -2,7 +2,6 @@ package io.github.bodzisz.controller;
 
 import io.github.bodzisz.enitity.Post;
 import io.github.bodzisz.service.PostService;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +19,6 @@ public class PostRestController {
 
     @GetMapping
     public List<Post> findAll() {
-        return postService.findAll();
+        return postService.findAllSorted();
     }
 }

@@ -27,7 +27,7 @@ public class PostController {
 
     @GetMapping
     public String showPosts(Model model) {
-        model.addAttribute("posts", postService.findAll());
+        model.addAttribute("posts", postService.findAllSorted());
         model.addAttribute("titleSearchPost", new Post());
         return "post-list";
     }
@@ -79,7 +79,7 @@ public class PostController {
     public String delete(@PathVariable ("id") int id, Model model) {
         postService.deleteById(id);
         model.addAttribute("deleteMessage", "Post deleted!");
-        model.addAttribute("posts", postService.findAll());
+        model.addAttribute("posts", postService.findAllSorted());
         model.addAttribute("titleSearchPost", new Post());
         return "post-list";
     }
