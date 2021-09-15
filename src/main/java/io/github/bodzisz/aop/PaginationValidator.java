@@ -1,11 +1,9 @@
 package io.github.bodzisz.aop;
 
 import io.github.bodzisz.service.PostService;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -13,11 +11,11 @@ import org.springframework.ui.Model;
 
 @Aspect
 @Component
-public class PageRequestValidator {
-    private final Logger logger = LoggerFactory.getLogger(PageRequestValidator.class);
+public class PaginationValidator {
+    private final Logger logger = LoggerFactory.getLogger(PaginationValidator.class);
     private PostService postService;
 
-    public PageRequestValidator(PostService postService) {
+    public PaginationValidator(PostService postService) {
         this.postService = postService;
     }
 

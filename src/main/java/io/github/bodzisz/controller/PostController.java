@@ -28,11 +28,10 @@ public class PostController {
 
     @GetMapping
     public String showPosts(Model model) {
-        setPostListModelAttributes(model);
         return this.showPagedPosts(model, 0);
     }
 
-    // Validation of targetPage was handled by AOP - check aop.PageRequestValidator class
+    // Validation of targetPage was handled by AOP - check aop.PaginationValidator class
     @GetMapping("/page/{targetPage}")
     public String showPagedPosts(Model model, @PathVariable("targetPage") int targetPage) {
 //        // requested page < 0
@@ -105,8 +104,7 @@ public class PostController {
     public String delete(@PathVariable ("id") int id, Model model) {
         postService.deleteById(id);
         model.addAttribute("deleteMessage", "Post deleted!");
-        setPostListModelAttributes(model);
-        return "post-list";
+        return this.showPagedPosts(model, 0);
     }
 
     @GetMapping("/{postId}/deleteComment/{id}")
@@ -128,9 +126,4 @@ public class PostController {
         return "post-list";
     }
 
-    private void setPostListModelAttributes(Model model) {
-        model.addAttribute("posts", postService.findAllSortedPaged(0));
-        model.addAttribute("titleSearchPost", new Post());
-        model.addAttribute("currentPage", 0);
-    }
 }
