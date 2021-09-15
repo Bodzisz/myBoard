@@ -6,6 +6,7 @@ import io.github.bodzisz.service.CommentService;
 import io.github.bodzisz.service.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,10 +28,34 @@ public class PostController {
 
     @GetMapping
     public String showPosts(Model model) {
-        model.addAttribute("posts", postService.findAllSorted());
+        setPostListModelAttributes(model);
+        return this.showPagedPosts(model, 0);
+    }
+
+    @GetMapping("/page/{targetPage}")
+    public String showPagedPosts(Model model, @PathVariable("targetPage") int targetPage) {
+        // requested page < 0
+        if(targetPage < 0) {
+            model.addAttribute("invalidPageMessage", "Page does not exist!");
+            return showPagedPosts(model, 0);
+        }
+
+        Page<Post> page = postService.findAllSortedPaged(targetPage);
+        int totalPages = page.getTotalPages();
+
+        // requested page number is bigger than number of pages
+        if(targetPage >= totalPages) {
+            model.addAttribute("invalidPageMessage", "Page does not exist!");
+            return showPagedPosts(model, totalPages - 1);
+        }
+
+        model.addAttribute("posts", page.getContent());
         model.addAttribute("titleSearchPost", new Post());
+        model.addAttribute("currentPage", targetPage);
+        model.addAttribute("pageNum", totalPages);
         return "post-list";
     }
+
 
     @GetMapping("/{id}")
     public String showSinglePost(@PathVariable("id") int id, Model model) {
@@ -79,8 +104,7 @@ public class PostController {
     public String delete(@PathVariable ("id") int id, Model model) {
         postService.deleteById(id);
         model.addAttribute("deleteMessage", "Post deleted!");
-        model.addAttribute("posts", postService.findAllSorted());
-        model.addAttribute("titleSearchPost", new Post());
+        setPostListModelAttributes(model);
         return "post-list";
     }
 
@@ -101,5 +125,11 @@ public class PostController {
         searchModel.setTitle(title);
         model.addAttribute("titleSearchPost", searchModel);
         return "post-list";
+    }
+
+    private void setPostListModelAttributes(Model model) {
+        model.addAttribute("posts", postService.findAllSortedPaged(0));
+        model.addAttribute("titleSearchPost", new Post());
+        model.addAttribute("currentPage", 0);
     }
 }

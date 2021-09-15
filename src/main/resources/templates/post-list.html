@@ -83,7 +83,30 @@
         </ul>
 
     </div>
+
+    <div th:if="${invalidPageMessage != null }" class="container error allPadding">
+        <span th:text="${invalidPageMessage}"></span>
+    </div>
+
+
+    <nav aria-label="Page navigation example" class="allPadding">
+        <ul class="pagination" th:if="${pageNum > 1}">
+            <li class="page-item"><a class="page-link" th:href="@{/posts/page/{targetPage}(targetPage=${currentPage-1})}">Previous</a></li>
+            <div class="row" th:each="i : ${#numbers.sequence(0, pageNum-1)}">
+                <li th:if="${currentPage != i}" class="page-item">
+                    <a class="page-link" th:href="@{/posts/page/{targetPage}(targetPage=${i})}">[[${i}]]</a>
+                </li>
+                <li th:if="${currentPage == i}" class="page-item active">
+                    <a class="page-link" th:href="@{/posts/page/{targetPage}(targetPage=${i})}">[[${i}]]</a>
+                </li>
+            </div>
+            <li class="page-item"><a class="page-link" th:href="@{/posts/page/{targetPage}(targetPage=${currentPage+1})}">Next</a></li>
+        </ul>
+    </nav>
+
 </div>
+
+
 
 
 </body>

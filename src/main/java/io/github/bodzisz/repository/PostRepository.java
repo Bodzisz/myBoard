@@ -1,6 +1,8 @@
 package io.github.bodzisz.repository;
 
 import io.github.bodzisz.enitity.Post;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import java.util.List;
 import java.util.Optional;
@@ -18,5 +20,7 @@ public interface PostRepository {
     void deleteById(int id);
 
     List<Post> findAllByTitleContains(String title);
+
+    Page<Post> findAll(Pageable pageable);
 
 }
