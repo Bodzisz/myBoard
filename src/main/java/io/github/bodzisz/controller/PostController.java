@@ -117,7 +117,11 @@ public class PostController {
     }
 
     @GetMapping("/search")
-    public String searchByTitle(@RequestParam("title") String title, Model model) {
+    public String searchByTitle(@RequestParam("title") String title, Model model)
+    {
+        if(title.replace(" ", "").equals("")) {
+            return showPosts(model);
+        }
         logger.info("Search for post with title: " + title);
         model.addAttribute("posts", postService.findAllByTitle(title));
         Post searchModel = new Post();
@@ -127,3 +131,4 @@ public class PostController {
     }
 
 }
+
