@@ -15,7 +15,7 @@ import java.util.List;
 
 @Service
 public class PostService {
-    private PostRepository repository;
+    private final PostRepository repository;
     @Value("${page.size}")
     private int pageSize;
 
