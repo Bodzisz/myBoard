@@ -51,6 +51,7 @@
 
 <div class="p-3 mb-2 bg-dark bg-gradient text-white">
     <h1 class="display-1">myBoard</h1>
+    <h6>by Kacper Wójcicki</h6>
 </div>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -71,6 +72,13 @@
                     <a class="nav-link active" aria-current="page" th:href="@{/posts/addPostForm}">
                         <button type="button" class="btn btn-secondary">
                             Add post
+                        </button>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" th:href="@{/logout}">
+                        <button type="button" class="btn btn-secondary">
+                            Log out
                         </button>
                     </a>
                 </li>
