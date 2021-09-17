@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface CommentRepositoryAdapter extends JpaRepository<Comment, Integer>, CommentRepository {
+interface CommentRepositoryAdapter extends JpaRepository<Comment, Integer>, CommentRepository {
 }

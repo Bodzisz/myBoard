@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface PostRepositoryAdapter extends JpaRepository<Post, Integer>, PostRepository {
+interface PostRepositoryAdapter extends JpaRepository<Post, Integer>, PostRepository {
 }

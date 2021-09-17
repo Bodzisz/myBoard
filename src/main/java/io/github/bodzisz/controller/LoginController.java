@@ -21,5 +21,4 @@ public class LoginController {
     public String loginError(Model model) {
         return "login-form";
     }
-
 }

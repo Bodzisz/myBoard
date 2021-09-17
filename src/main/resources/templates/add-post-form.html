@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>myBoard</title>
@@ -32,20 +33,52 @@
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
+        <p  class="lead position-relative m-4">Username: <span class="fw-bold text-success" sec:authentication="name"></span>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" th:href="@{/posts}">
-                        <button type="button" class="btn btn-secondary">
-                            Home
-                        </button>
-                    </a>
-                </li>
-            </ul>
+        <div class="collapse navbar-collapse">
+            <div class="collapse navbar-collapse"></div>
+            <div class="collapse navbar-collapse align-items-center">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" th:href="@{/posts}">
+                            <button type="button" class="btn btn-secondary position-relative">
+                                Home
+                            </button>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" th:href="@{/posts}">
+                            <button type="button" class="btn btn-secondary position-relative">
+                                Profile
+                            </button>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" th:href="@{/posts}">
+                            <button type="button" class="btn btn-secondary position-relative">
+                                My posts
+                            </button>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" th:href="@{/posts/addPostForm}">
+                            <button type="button" class="btn btn-secondary position-relative">
+                                Add post
+                            </button>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" th:href="@{/logout}">
+                            <button type="button" class="btn btn-primary position-relative">
+                                Log out
+                            </button>
+                        </a>
+                    </li>
+                </ul>
         </div>
+        <div class="collapse navbar-collapse"></div>
     </div>
 </nav>
 <hr>

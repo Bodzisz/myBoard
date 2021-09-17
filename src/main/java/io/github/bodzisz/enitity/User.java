@@ -1,6 +1,9 @@
 package io.github.bodzisz.enitity;
 
+import io.github.bodzisz.enitity.dto.UserWriteModel;
+
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -31,6 +34,14 @@ public class User {
         this.password = user.password;
         this.roles = user.roles;
     }
+
+    public User(UserWriteModel userWriteModel) {
+        this.enabled = 1;
+        this.name = userWriteModel.getName();
+        this.username = userWriteModel.getUsername();
+        this.password = userWriteModel.getPassword();
+    }
+
 
     public int getId() {
         return id;
