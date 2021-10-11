@@ -11,4 +11,6 @@ Board for user's posts
 - MySQL
 - Flyway
 - Thymeleaf
+- HTML + CSS
 - Bootstrap
+
