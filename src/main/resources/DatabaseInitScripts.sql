@@ -8,15 +8,19 @@ CREATE TABLE posts (
     id int NOT NULL auto_increment,
     title varchar(50) NOT NULL,
     content varchar(10000) NOT NULL,
-    PRIMARY KEY (id)
+    user_id int NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE comments (
     id int NOT NULL auto_increment,
     content varchar(5000),
     post_id int NOT NULL,
+    user_id int NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (post_id) REFERENCES posts(id)
+    FOREIGN KEY (post_id) REFERENCES posts(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 
