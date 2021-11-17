@@ -10,6 +10,8 @@ import java.util.Optional;
 
 public interface UsersRepository {
 
+    User findByUsername(String username);
+
     Optional<User> findAllByUsername(String username);
 
     User save(User user);

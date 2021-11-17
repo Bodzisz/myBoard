@@ -9,6 +9,8 @@ public interface CommentRepository {
 
     List<Comment> findAll();
 
+    Comment findById(int id);
+
     Comment save(Comment comment);
 
     void deleteById(int id);

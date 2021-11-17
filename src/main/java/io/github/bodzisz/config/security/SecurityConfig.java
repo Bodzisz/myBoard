@@ -1,5 +1,6 @@
 package io.github.bodzisz.config.security;
 
+import io.github.bodzisz.error.MyAccessDeniedHandler;
 import io.github.bodzisz.repository.UsersRepository;
 import io.github.bodzisz.service.MyUsersDetailService;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -57,7 +60,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .permitAll()
                 .and()
                 .logout()
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .and()
+                .exceptionHandling()
+                .accessDeniedHandler(accessDeniedHandler());
 
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler(){
+        return new MyAccessDeniedHandler();
     }
 }

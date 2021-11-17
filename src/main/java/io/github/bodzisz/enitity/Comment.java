@@ -19,6 +19,9 @@ public class Comment {
     private String content;
     @Embedded
     private Audit audit = new Audit();
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Comment() {
     }
@@ -42,5 +45,13 @@ public class Comment {
 
     public LocalDateTime getCreationTime() {
         return audit == null? null : audit.getCreated();
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

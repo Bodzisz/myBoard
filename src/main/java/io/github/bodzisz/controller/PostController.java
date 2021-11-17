@@ -2,28 +2,33 @@ package io.github.bodzisz.controller;
 
 import io.github.bodzisz.enitity.Comment;
 import io.github.bodzisz.enitity.Post;
+import io.github.bodzisz.repository.UsersRepository;
 import io.github.bodzisz.service.CommentService;
 import io.github.bodzisz.service.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/posts")
 public class PostController {
     private final PostService postService;
     private final CommentService commentService;
+    private final UsersRepository usersRepository;
     Logger logger = LoggerFactory.getLogger(PostController.class);
 
-    public PostController(final PostService postService, CommentService commentService) {
+    public PostController(final PostService postService, CommentService commentService, UsersRepository usersRepository) {
         this.postService = postService;
         this.commentService = commentService;
+        this.usersRepository = usersRepository;
     }
 
     @GetMapping
@@ -58,15 +63,17 @@ public class PostController {
 
 
     @GetMapping("/{id}")
-    public String showSinglePost(@PathVariable("id") int id, Model model) {
+    public String showSinglePost(@PathVariable("id") int id, Model model, Principal principal) {
         model.addAttribute("post", postService.findById(id));
         model.addAttribute("commentToAdd", new Comment());
         return "single-post";
     }
 
     @GetMapping("/addPostForm")
-    public String addPostForm(Model model) {
-        model.addAttribute("post", new Post());
+    public String addPostForm(Model model, Principal principal) {
+        Post newPost = new Post();
+        newPost.setUser(usersRepository.findByUsername(principal.getName()));
+        model.addAttribute("post", newPost);
         return "add-post-form";
     }
 
@@ -84,7 +91,8 @@ public class PostController {
     public String savePostComment(@ModelAttribute("commentToAdd") @Valid Comment comment,
                                   BindingResult result,
                                   @PathVariable("id") int id,
-                                  Model model) {
+                                  Model model, Principal principal) {
+        comment.setUser(usersRepository.findByUsername(principal.getName()));
         Post post = postService.findById(id);
         model.addAttribute("post", post);
         if(result.hasErrors()) {
@@ -94,12 +102,14 @@ public class PostController {
         return "redirect:/posts/" + id;
     }
 
+    @PreAuthorize("hasRole('ADMIN') or principal.username.equals(@postService.findById(#id).user.username)")
     @GetMapping("/update/{id}")
     public String updateForm(@PathVariable ("id") int id , Model model) {
         model.addAttribute("post", postService.findById(id));
         return "add-post-form";
     }
 
+    @PreAuthorize("hasRole('ADMIN') or principal.username.equals(@postService.findById(#id).user.username)")
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable ("id") int id, Model model) {
         postService.deleteById(id);
@@ -107,6 +117,7 @@ public class PostController {
         return this.showPagedPosts(model, 0);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or principal.username.equals(@commentService.findById(#id).user.username)")
     @GetMapping("/{postId}/deleteComment/{id}")
     public String deleteComment(@PathVariable ("id") int id, @PathVariable ("postId") int postId, Model model) {
         commentService.deleteComment(id);
