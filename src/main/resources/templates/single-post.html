@@ -114,6 +114,8 @@
     <br>
     <small th:if="${post.getUpdateTime() != null}" th:text="|Updated on: ${post.getUpdateTime()}|"
            style="float: right"></small>
+    <br>
+    <p th:text="${post.user.username}" class="text-success" style="float: right"></p>
 
     <div class="container-md container  allPadding textWrap" th:text="${post.content}"></div>
 </div>

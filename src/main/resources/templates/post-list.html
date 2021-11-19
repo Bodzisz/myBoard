@@ -11,11 +11,8 @@
           integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
 
     <style>
-        .alignleft {
-            float: left;
-        }
-        .alignright {
-            float: right;
+        a {
+            text-decoration:none;
         }
         .allPadding {
             padding: 20px;
@@ -101,8 +98,17 @@
             <li  class="list-group-item shadow rounded">
                 <div class="container">
                     <a th:href="@{/posts/{id}(id=${post.id})}" style="color: black">
-                    <p th:text="${post.title}" class="alignleft"></p>
-                    <p th:text="${post.getCreationTime()}" class="alignright"></p>
+                        <div class="row">
+                            <div class="col-8">
+                            <p th:text="${post.title}"></p>
+                            </div>
+                            <div class="col-2 text-success">
+                            <p th:text="${post.user.username}" ></p>
+                            </div>
+                            <div class="col-2">
+                            <p th:text="${post.getCreationTime()}"></p>
+                            </div>
+                        </div>
                     </a>
                 </div>
             </li>
