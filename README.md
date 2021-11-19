@@ -21,7 +21,7 @@ you can use universial credentials:
 - HTML + CSS
 - Bootstrap
 
-<font size="6">**How to run the project:**</font>
+## How to run the project:
 
 #### Database setup
 You will need MySQL database instance. If you already have that we
