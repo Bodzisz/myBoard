@@ -1,10 +1,14 @@
 **New features are going to be implemented in the future
 
 # myBoard
-myBoard is an application that gives user the opportunity to
-upload posts and comment post of other users
-
 Live version (might take few seconds to load): https://my-post-board.herokuapp.com/
+
+myBoard is an application that gives user the opportunity to
+upload posts and comment post of other users. You need to register to be able to use the site or
+you can use universial credentials:
+- __username:__ user
+- __password:__ user
+
 
 <font size="5">**Tech Stack:**</font>
 - Spring Boot
@@ -17,7 +21,7 @@ Live version (might take few seconds to load): https://my-post-board.herokuapp.c
 - HTML + CSS
 - Bootstrap
 
-##How to run the project:
+<font size="6">**How to run the project:**</font>
 
 #### Database setup
 You will need MySQL database instance. If you already have that we
