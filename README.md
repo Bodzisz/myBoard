@@ -19,8 +19,7 @@ Live version (might take few seconds to load): https://my-post-board.herokuapp.c
 
 ##How to run the project:
 
-
-#### Databse setup
+#### Database setup
 You will need MySQL database instance. If you already have that we
 can move on to editing __application.properties__. I suggest to creare your own local profile
 called for example __application-local.properties__ (or .yml) where you can put your
