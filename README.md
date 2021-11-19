@@ -17,8 +17,8 @@ Live version (might take few seconds to load): https://my-post-board.herokuapp.c
 - HTML + CSS
 - Bootstrap
 
-<font size="5">**How to run the project:**</font>
-<br>
+##How to run the project:
+
 
 #### Databse setup
 You will need MySQL database instance. If you already have that we
