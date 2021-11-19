@@ -4,7 +4,7 @@
 Live version (might take few seconds to load): https://my-post-board.herokuapp.com/
 
 myBoard is an application that gives user the opportunity to
-upload posts and comment post of other users. You need to register to be able to use the site or
+create posts and comment post of other users. You need to register to be able to use the site or
 you can use universial credentials:
 - __username:__ user
 - __password:__ user
@@ -25,7 +25,7 @@ you can use universial credentials:
 
 #### Database setup
 You will need MySQL database instance. If you already have that we
-can move on to editing __application.properties__. I suggest to creare your own local profile
+can move on to editing __application.properties__. I suggest to create your own local profile
 called for example __application-local.properties__ (or .yml) where you can put your
 database credentials. In order to do that, edit these properties:
 ```.properties
