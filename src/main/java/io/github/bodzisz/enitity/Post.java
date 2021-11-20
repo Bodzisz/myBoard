@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -78,6 +79,9 @@ public class Post {
     }
 
     public void addComment(Comment comment) {
+        if(comments == null) {
+            comments = new ArrayList<>();
+        }
         comments.add(comment);
     }
 
