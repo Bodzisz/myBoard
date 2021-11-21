@@ -39,20 +39,8 @@ public class PostController {
     // Validation of targetPage was handled by AOP - check aop.PaginationValidator class
     @GetMapping("/page/{targetPage}")
     public String showPagedPosts(Model model, @PathVariable("targetPage") int targetPage) {
-//        // requested page < 0
-//        if(targetPage < 0) {
-//            model.addAttribute("invalidPageMessage", "Page does not exist!");
-//            return showPagedPosts(model, 0);
-//        }
-
         Page<Post> page = postService.findAllSortedPaged(targetPage);
         int totalPages = page.getTotalPages();
-
-//        // requested page number is bigger than number of pages
-//        if(targetPage >= totalPages) {
-//            model.addAttribute("invalidPageMessage", "Page does not exist!");
-//            return showPagedPosts(model, totalPages - 1);
-//        }
 
         model.addAttribute("posts", page.getContent());
         model.addAttribute("titleSearchPost", new Post());
