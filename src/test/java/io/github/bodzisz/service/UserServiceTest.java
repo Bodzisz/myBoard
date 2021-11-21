@@ -1,10 +1,8 @@
 package io.github.bodzisz.service;
 
-import io.github.bodzisz.enitity.Comment;
 import io.github.bodzisz.enitity.Role;
 import io.github.bodzisz.enitity.User;
 import io.github.bodzisz.enitity.dto.UserWriteModel;
-import io.github.bodzisz.repository.CommentRepository;
 import io.github.bodzisz.repository.RoleRepository;
 import io.github.bodzisz.repository.UsersRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
