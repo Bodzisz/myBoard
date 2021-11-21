@@ -1,7 +1,6 @@
 package io.github.bodzisz.service;
 
 import io.github.bodzisz.enitity.MyUserDetails;
-import io.github.bodzisz.enitity.User;
 import io.github.bodzisz.repository.UsersRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
