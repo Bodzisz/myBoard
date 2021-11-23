@@ -15,7 +15,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @NotBlank(message = "Comment's content can not be empty")
-    @Size(max=500, message ="Post content can contain maximum of 500 characters")
+    @Size(max=500, message ="Comment content can contain maximum of 500 characters")
     private String content;
     @Embedded
     private Audit audit = new Audit();
