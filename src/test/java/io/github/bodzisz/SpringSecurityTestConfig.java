@@ -22,7 +22,7 @@ public class SpringSecurityTestConfig {
     public UserDetailsService userDetailsService() {
         User user = new User("Basic User", "user", "password");
         List<Role> userRoles = new ArrayList<>();
-        Role userRole = new Role("ROLE_USER");
+        Role userRole = new Role("USER");
         userRoles.add(userRole);
         user.setRoles(userRoles);
         UserDetails userDetails = new MyUserDetails(user);
@@ -30,7 +30,7 @@ public class SpringSecurityTestConfig {
         User admin = new User("admin", "admin", "password");
         List<Role> adminRoles = new ArrayList<>();
         adminRoles.add(userRole);
-        adminRoles.add(new Role("ROLE_ADMIN"));
+        adminRoles.add(new Role("ADMIN"));
         admin.setRoles(adminRoles);
         UserDetails adminDetails = new MyUserDetails(admin);
 
