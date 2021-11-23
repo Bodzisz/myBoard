@@ -10,9 +10,9 @@ import java.util.ArrayList;
 
 @Service
 public class UserService {
-    private UsersRepository usersRepository;
-    private RoleRepository roleRepository;
-    private PasswordEncoder passwordEncoder;
+    private final UsersRepository usersRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserService(UsersRepository usersRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.usersRepository = usersRepository;
@@ -27,6 +27,10 @@ public class UserService {
         user.getRoles().add(roleRepository.findRoleByRole("USER"));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return usersRepository.save(user);
+    }
+
+    public User findByUsername(String username) {
+        return usersRepository.findByUsername(username);
     }
 
     public boolean existsByUsername(String username) {
