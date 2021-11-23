@@ -10,6 +10,7 @@ import io.github.bodzisz.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -65,11 +66,11 @@ public class PostController {
         User user = usersService.findByUsername(principal.getName());
         newPost.setUser(user);
         model.addAttribute("post", newPost);
-        model.addAttribute("author", user);
         return "add-post-form";
     }
 
     @PostMapping("/savePost")
+    @ResponseStatus(HttpStatus.CREATED)
     public String savePost(@ModelAttribute("post") @Valid Post post,
                            BindingResult result) {
         if(result.hasErrors()) {
@@ -80,6 +81,7 @@ public class PostController {
     }
 
     @PostMapping("/{id}/saveComment")
+    @ResponseStatus(HttpStatus.CREATED)
     public String savePostComment(@ModelAttribute("commentToAdd") @Valid Comment comment,
                                   BindingResult result,
                                   @PathVariable("id") int id,
