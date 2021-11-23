@@ -2,9 +2,11 @@ package io.github.bodzisz.controller;
 
 import io.github.bodzisz.enitity.Comment;
 import io.github.bodzisz.enitity.Post;
+import io.github.bodzisz.enitity.User;
 import io.github.bodzisz.repository.UsersRepository;
 import io.github.bodzisz.service.CommentService;
 import io.github.bodzisz.service.PostService;
+import io.github.bodzisz.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -22,13 +24,13 @@ import java.security.Principal;
 public class PostController {
     private final PostService postService;
     private final CommentService commentService;
-    private final UsersRepository usersRepository;
+    private final UserService usersService;
     Logger logger = LoggerFactory.getLogger(PostController.class);
 
-    public PostController(final PostService postService, CommentService commentService, UsersRepository usersRepository) {
+    public PostController(final PostService postService, CommentService commentService, UserService userService) {
         this.postService = postService;
         this.commentService = commentService;
-        this.usersRepository = usersRepository;
+        this.usersService = userService;
     }
 
     @GetMapping
@@ -51,7 +53,7 @@ public class PostController {
 
 
     @GetMapping("/{id}")
-    public String showSinglePost(@PathVariable("id") int id, Model model, Principal principal) {
+    public String showSinglePost(@PathVariable("id") int id, Model model) {
         model.addAttribute("post", postService.findById(id));
         model.addAttribute("commentToAdd", new Comment());
         return "single-post";
@@ -60,8 +62,10 @@ public class PostController {
     @GetMapping("/addPostForm")
     public String addPostForm(Model model, Principal principal) {
         Post newPost = new Post();
-        newPost.setUser(usersRepository.findByUsername(principal.getName()));
+        User user = usersService.findByUsername(principal.getName());
+        newPost.setUser(user);
         model.addAttribute("post", newPost);
+        model.addAttribute("author", user);
         return "add-post-form";
     }
 
@@ -80,7 +84,7 @@ public class PostController {
                                   BindingResult result,
                                   @PathVariable("id") int id,
                                   Model model, Principal principal) {
-        comment.setUser(usersRepository.findByUsername(principal.getName()));
+        comment.setUser(usersService.findByUsername(principal.getName()));
         Post post = postService.findById(id);
         model.addAttribute("post", post);
         if(result.hasErrors()) {
