@@ -42,6 +42,13 @@ public class User {
         this.password = userWriteModel.getPassword();
     }
 
+    public User(String name, String username, String password) {
+        this.name = name;
+        this.username = username;
+        this.password = password;
+        this.enabled = 1;
+    }
+
 
     public int getId() {
         return id;
