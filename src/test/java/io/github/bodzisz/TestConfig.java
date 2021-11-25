@@ -13,9 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -83,7 +81,10 @@ public class TestConfig {
 
             @Override
             public Page<Post> findAll(Pageable pageable) {
-                return null;
+                Page<Post> page = new PageImpl<Post>(new ArrayList<>(map.values()),
+                        pageable,
+                        map.size());
+                return page;
             }
         };
     }

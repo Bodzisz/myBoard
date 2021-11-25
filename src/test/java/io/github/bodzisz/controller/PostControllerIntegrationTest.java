@@ -1,36 +1,40 @@
 package io.github.bodzisz.controller;
 
 import io.github.bodzisz.SpringSecurityTestConfig;
-import io.github.bodzisz.TestConfig;
+import io.github.bodzisz.controller.exception.CustomExceptionHandler;
 import io.github.bodzisz.enitity.Comment;
 import io.github.bodzisz.enitity.Post;
 import io.github.bodzisz.enitity.User;
 import io.github.bodzisz.repository.PostRepository;
 import io.github.bodzisz.repository.UsersRepository;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Random;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ActiveProfiles({"integration"})
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {SpringSecurityTestConfig.class})
 @AutoConfigureMockMvc
 public class PostControllerIntegrationTest {
@@ -43,6 +47,9 @@ public class PostControllerIntegrationTest {
 
     @Autowired
     private PostRepository postRepository;
+
+
+
 
     @Test
     @WithUserDetails
@@ -160,6 +167,7 @@ public class PostControllerIntegrationTest {
         Post post = new Post();
         post.setTitle("testPostTitle");
         post.setContent("testPostContent");
+        post.setUser(user);
         int postId = postRepository.save(post).getId();
         // and
         Comment comment = new Comment();
@@ -237,6 +245,123 @@ public class PostControllerIntegrationTest {
                 .andExpect(model().attributeHasFieldErrors("commentToAdd", "content"))
                 .andExpect(model().attribute("commentToAdd", hasProperty("content", is(commentContent))));
     }
+
+    @Test
+    @WithUserDetails(value = "user")
+    void delete_notPostAuthor_userWithNoAdminRole_noAccess() throws Exception {
+        // given
+        User user = new User("author", "author", "password");
+        // and
+        Post post = new Post();
+        post.setTitle("testPostTitle");
+        post.setContent("testPostContent");
+        post.setUser(user);
+        int postId = postRepository.save(post).getId();
+
+        // when + then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/delete/" + postId))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/accessDenied"));
+    }
+
+    @Test
+    @WithUserDetails(value = "user")
+    void delete_postAuthorLoggedIn_deletesPost() throws Exception {
+        // given
+        User user = usersRepository.findByUsername("user");
+        // and
+        Post post = new Post();
+        post.setTitle("testPostTitle");
+        post.setContent("testPostContent");
+        post.setUser(user);
+        int postId = postRepository.save(post).getId();
+        int numberOfPostsBefore = postRepository.findAll().size();
+
+        // when + then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/delete/" + postId))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(model().attribute("deleteMessage", containsString("Post deleted")));
+
+        assertThat(postRepository.findAll().size()).isEqualTo(numberOfPostsBefore - 1);
+    }
+
+    @Test
+    @WithUserDetails(value = "admin")
+    void delete_adminLoggedIn_deletesPost() throws Exception {
+        // given
+        User user = usersRepository.findByUsername("user");
+        // and
+        Post post = new Post();
+        post.setTitle("testPostTitle");
+        post.setContent("testPostContent");
+        post.setUser(user);
+        int postId = postRepository.save(post).getId();
+        int numberOfPostsBefore = postRepository.findAll().size();
+
+        // when + then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/delete/" + postId))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(model().attribute("deleteMessage", containsString("Post deleted")));
+
+        assertThat(postRepository.findAll().size()).isEqualTo(numberOfPostsBefore - 1);
+    }
+
+    @Test
+    @WithUserDetails
+    void httpGet_update_noPostAuthor_noAdmin_noAccess() throws Exception {
+        // given
+        User user = new User("author", "author", "password");
+        // and
+        Post post = new Post();
+        post.setTitle("testPostTitle");
+        post.setContent("testPostContent");
+        post.setUser(user);
+        int postId = postRepository.save(post).getId();
+
+        // when + then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/update/" + postId))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/accessDenied"));
+    }
+
+    @Test
+    @WithUserDetails(value = "user")
+    void httpGet_update_PostAuthorAsPrincipal_returnsUpdatePostForm() throws Exception {
+        // given
+        User user = usersRepository.findByUsername("user");
+        // and
+        Post post = new Post();
+        post.setTitle("testPostTitle");
+        post.setContent("testPostContent");
+        post.setUser(user);
+        int postId = postRepository.save(post).getId();
+
+        // when + then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/update/" + postId))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(view().name("add-post-form"))
+                .andExpect(model().attribute("post", is(post)));
+    }
+
+    @Test
+    @WithUserDetails(value = "admin")
+    void httpGet_update_adminAsPrincipal_returnsUpdatePostForm() throws Exception {
+        // given
+        User user = usersRepository.findByUsername("user");
+        // and
+        Post post = new Post();
+        post.setTitle("testPostTitle");
+        post.setContent("testPostContent");
+        post.setUser(user);
+        int postId = postRepository.save(post).getId();
+
+        // when + then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/update/" + postId))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(view().name("add-post-form"))
+                .andExpect(model().attribute("post", is(post)));
+    }
+
 
     public static String generateString(int n) {
         Random random = new Random();
