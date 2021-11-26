@@ -2,7 +2,6 @@ package io.github.bodzisz.controller;
 
 import io.github.bodzisz.enitity.Post;
 import io.github.bodzisz.service.PostService;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
