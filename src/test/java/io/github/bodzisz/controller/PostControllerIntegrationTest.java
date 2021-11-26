@@ -1,31 +1,24 @@
 package io.github.bodzisz.controller;
 
 import io.github.bodzisz.SpringSecurityTestConfig;
-import io.github.bodzisz.controller.exception.CustomExceptionHandler;
 import io.github.bodzisz.enitity.Comment;
 import io.github.bodzisz.enitity.Post;
 import io.github.bodzisz.enitity.User;
+import io.github.bodzisz.repository.CommentRepository;
 import io.github.bodzisz.repository.PostRepository;
 import io.github.bodzisz.repository.UsersRepository;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Random;
 
@@ -34,7 +27,7 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ActiveProfiles({"integration"})
+@ActiveProfiles({"integration", "test"})
 @SpringBootTest(classes = {SpringSecurityTestConfig.class})
 @AutoConfigureMockMvc
 public class PostControllerIntegrationTest {
@@ -48,6 +41,11 @@ public class PostControllerIntegrationTest {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private CommentRepository  commentRepository;
+
+    @Value("${page.size}")
+    private int pageSize;
 
 
 
@@ -110,6 +108,7 @@ public class PostControllerIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(view().name("redirect:/posts"))
                 .andExpect(redirectedUrl("/posts"));
+        postRepository.deleteById(postRepository.findAll().size());
     }
 
     @Test
@@ -120,7 +119,7 @@ public class PostControllerIntegrationTest {
         String testContent = "";
 
         // when + then
-        mockMvc.perform(MockMvcRequestBuilders.post("/posts/savePost")
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/posts/savePost")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .accept(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("title", testTitle)
@@ -132,7 +131,10 @@ public class PostControllerIntegrationTest {
                 .andExpect(model().attributeHasFieldErrors("post", "title"))
                 .andExpect(model().attributeHasFieldErrors("post", "content"))
                 .andExpect(model().attribute("post", hasProperty("title", is(testTitle))))
-                .andExpect(model().attribute("post", hasProperty("content", is(testContent))));
+                .andExpect(model().attribute("post", hasProperty("content", is(testContent))))
+                .andReturn();
+        Post saved = (Post)result.getModelAndView().getModel().get("post");
+        postRepository.deleteById(saved.getId());
     }
 
     @Test
@@ -142,8 +144,9 @@ public class PostControllerIntegrationTest {
         String testTitle = generateString(101);
         String testContent = generateString(5001);
 
+
         // when + then
-        mockMvc.perform(MockMvcRequestBuilders.post("/posts/savePost")
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/posts/savePost")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .accept(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("title", testTitle)
@@ -155,7 +158,10 @@ public class PostControllerIntegrationTest {
                 .andExpect(model().attributeHasFieldErrors("post", "title"))
                 .andExpect(model().attributeHasFieldErrors("post", "content"))
                 .andExpect(model().attribute("post", hasProperty("title", is(testTitle))))
-                .andExpect(model().attribute("post", hasProperty("content", is(testContent))));
+                .andExpect(model().attribute("post", hasProperty("content", is(testContent))))
+                .andReturn();
+        Post saved = (Post)result.getModelAndView().getModel().get("post");
+        postRepository.deleteById(saved.getId());
     }
 
     @Test
@@ -360,6 +366,165 @@ public class PostControllerIntegrationTest {
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("add-post-form"))
                 .andExpect(model().attribute("post", is(post)));
+    }
+
+    @Test
+    @WithUserDetails(value = "user")
+    void httpGet_deleteComment_NotCommentAuthor_NotAdmin_accessDenied() throws Exception {
+        // given
+        User user = new User("author", "author", "password");
+        // and
+        Post post = new Post("testPostTitle", "testPostContent", user);
+        int postId = postRepository.save(post).getId();
+        // and
+        Comment comment = new Comment();
+        comment.setContent("testCommentContent");
+        comment.setUser(user);
+        int commentId = commentRepository.save(comment).getId();
+
+        // when + then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/" + postId + "/deleteComment/" + commentId))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/accessDenied"));
+    }
+
+    @Test
+    @WithUserDetails(value = "user")
+    void httpGet_deleteComment_commentAuthorLoggedIn_deletesComment() throws Exception {
+        // given
+        User user = new User("author", "author", "password");
+        // and
+        Post post = new Post("testPostTitle", "testPostContent", user);
+        int postId = postRepository.save(post).getId();
+        // and
+        Comment comment = new Comment();
+        comment.setContent("testCommentContent");
+        comment.setUser(usersRepository.findByUsername("user"));
+        int commentId = commentRepository.save(comment).getId();
+        // and
+        int initialSize = commentRepository.findAll().size();
+
+        // when + then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/" + postId + "/deleteComment/" + commentId))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(view().name("single-post"))
+                .andExpect(model().attribute("deleteCommentMessage", containsString("Comment deleted")))
+                .andExpect(model().attribute("post", is(post)))
+                .andExpect(model().attributeExists("commentToAdd"));
+
+        assertThat(commentRepository.findAll().size()).isEqualTo(initialSize - 1);
+    }
+
+    @Test
+    @WithUserDetails(value = "admin")
+    void httpGet_deleteComment_adminLoggedIn_deletesComment() throws Exception {
+        // given
+        User user = new User("author", "author", "password");
+        // and
+        Post post = new Post("testPostTitle", "testPostContent", user);
+        int postId = postRepository.save(post).getId();
+        // and
+        Comment comment = new Comment();
+        comment.setContent("testCommentContent");
+        comment.setUser(user);
+        int commentId = commentRepository.save(comment).getId();
+        // and
+        int initialSize = commentRepository.findAll().size();
+
+        // when + then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/" + postId + "/deleteComment/" + commentId))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(view().name("single-post"))
+                .andExpect(model().attribute("deleteCommentMessage", containsString("Comment deleted")))
+                .andExpect(model().attribute("post", is(post)))
+                .andExpect(model().attributeExists("commentToAdd"));
+
+        assertThat(commentRepository.findAll().size()).isEqualTo(initialSize - 1);
+    }
+
+    @Test
+    @WithUserDetails
+    void httpGet_searchByTitle_givenValidTitle_returnsAllPostContainingGivenTitle() throws Exception {
+        // given
+        User user = usersRepository.findByUsername("user");
+        // and
+        Post post1 = new Post("123", "test1", user);
+        // and
+        Post post2 = new Post("test123test", "test2", user);
+        // and
+        Post post3 = new Post("random", "test3", user);
+        // and
+        String givenTitle = "123";
+
+        postRepository.save(post1);
+        postRepository.save(post2);
+        postRepository.save(post3);
+
+        // when + then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/search")
+                .param("title", givenTitle))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(model().attribute("posts", hasSize(2)))
+                .andExpect(model().attribute("posts", contains(post1, post2)))
+                .andExpect(model().attribute("titleSearchPost", hasProperty("title", equalTo(givenTitle))))
+                .andExpect(view().name("post-list"));
+    }
+
+    @Test
+    @WithUserDetails
+    void httpGet_searchByTitle_givenTitleThatMatchesNoPostsTitles_returnsEmptyList() throws Exception {
+        // given
+        User user = usersRepository.findByUsername("user");
+        // and
+        Post post1 = new Post("456", "test1", user);
+        // and
+        Post post2 = new Post("test456test", "test2", user);
+        // and
+        Post post3 = new Post("foo", "test3", user);
+        // and
+        String givenTitle = "NotMatchingTitle";
+
+        postRepository.save(post1);
+        postRepository.save(post2);
+        postRepository.save(post3);
+
+        // when + then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/search")
+                        .param("title", givenTitle))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(model().attribute("posts", hasSize(0)))
+                .andExpect(model().attribute("titleSearchPost", hasProperty("title", equalTo(givenTitle))))
+                .andExpect(view().name("post-list"));
+    }
+
+    @Test
+    @WithUserDetails
+    void httpGet_searchByTitle_givenEmptyTitle_returnsAllPosts() throws Exception {
+        // given
+        User user = usersRepository.findByUsername("user");
+        // and
+        Post post1 = new Post("789", "test1", user);
+        // and
+        Post post2 = new Post("test789test", "test2", user);
+        // and
+        Post post3 = new Post("333", "test3", user);
+
+        postRepository.save(post1);
+        postRepository.save(post2);
+        postRepository.save(post3);
+
+        // and
+        String givenTitle = "";
+        // and
+        int numberOfAllPosts = postRepository.findAll().size();
+
+        // when + then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/search")
+                        .param("title", givenTitle))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(model().attribute("posts", hasSize(numberOfAllPosts)))
+                .andExpect(model().attribute("titleSearchPost", hasProperty("title", nullValue())))
+                .andExpect(view().name("post-list"));
     }
 
 
