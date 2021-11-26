@@ -7,7 +7,10 @@ import io.github.bodzisz.enitity.User;
 import io.github.bodzisz.repository.CommentRepository;
 import io.github.bodzisz.repository.PostRepository;
 import io.github.bodzisz.repository.UsersRepository;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,6 +23,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.time.LocalDateTime;
 import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles({"integration", "test"})
 @SpringBootTest(classes = {SpringSecurityTestConfig.class})
 @AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PostControllerIntegrationTest {
 
     @Autowired
@@ -90,6 +95,7 @@ public class PostControllerIntegrationTest {
 
     @Test
     @WithUserDetails(value = "user")
+    @Order(100)
     void httpPost_savePost_validPost_returnsView_hasStatusIsCreated() throws Exception {
         // given
         String testTitle = "testTitle";
@@ -108,18 +114,18 @@ public class PostControllerIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(view().name("redirect:/posts"))
                 .andExpect(redirectedUrl("/posts"));
-        postRepository.deleteById(postRepository.findAll().size());
     }
 
     @Test
     @WithUserDetails
+    @Order(100)
     void httpPost_savePost_invalidPost_blankFields_hasErrors_returnsAddFormView() throws Exception {
         // given
         String testTitle = "";
         String testContent = "";
 
         // when + then
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/posts/savePost")
+        mockMvc.perform(MockMvcRequestBuilders.post("/posts/savePost")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .accept(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("title", testTitle)
@@ -131,14 +137,12 @@ public class PostControllerIntegrationTest {
                 .andExpect(model().attributeHasFieldErrors("post", "title"))
                 .andExpect(model().attributeHasFieldErrors("post", "content"))
                 .andExpect(model().attribute("post", hasProperty("title", is(testTitle))))
-                .andExpect(model().attribute("post", hasProperty("content", is(testContent))))
-                .andReturn();
-        Post saved = (Post)result.getModelAndView().getModel().get("post");
-        postRepository.deleteById(saved.getId());
+                .andExpect(model().attribute("post", hasProperty("content", is(testContent))));
     }
 
     @Test
     @WithUserDetails
+    @Order(100)
     void httpPost_savePost_invalidPost_oversizedFields_hasErrors_returnsAddPostFormView() throws Exception {
         // given
         String testTitle = generateString(101);
@@ -146,7 +150,7 @@ public class PostControllerIntegrationTest {
 
 
         // when + then
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/posts/savePost")
+        mockMvc.perform(MockMvcRequestBuilders.post("/posts/savePost")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .accept(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("title", testTitle)
@@ -158,10 +162,7 @@ public class PostControllerIntegrationTest {
                 .andExpect(model().attributeHasFieldErrors("post", "title"))
                 .andExpect(model().attributeHasFieldErrors("post", "content"))
                 .andExpect(model().attribute("post", hasProperty("title", is(testTitle))))
-                .andExpect(model().attribute("post", hasProperty("content", is(testContent))))
-                .andReturn();
-        Post saved = (Post)result.getModelAndView().getModel().get("post");
-        postRepository.deleteById(saved.getId());
+                .andExpect(model().attribute("post", hasProperty("content", is(testContent))));
     }
 
     @Test
@@ -499,6 +500,7 @@ public class PostControllerIntegrationTest {
 
     @Test
     @WithUserDetails
+    @Order(2)
     void httpGet_searchByTitle_givenEmptyTitle_returnsAllPosts() throws Exception {
         // given
         User user = usersRepository.findByUsername("user");
@@ -517,6 +519,7 @@ public class PostControllerIntegrationTest {
         String givenTitle = "";
         // and
         int numberOfAllPosts = postRepository.findAll().size();
+        numberOfAllPosts = numberOfAllPosts > pageSize ? pageSize : numberOfAllPosts;
 
         // when + then
         mockMvc.perform(MockMvcRequestBuilders.get("/posts/search")
@@ -525,6 +528,49 @@ public class PostControllerIntegrationTest {
                 .andExpect(model().attribute("posts", hasSize(numberOfAllPosts)))
                 .andExpect(model().attribute("titleSearchPost", hasProperty("title", nullValue())))
                 .andExpect(view().name("post-list"));
+    }
+
+    @Test
+    @WithUserDetails
+    @Order(1)
+    void httpGet_showPagedPosts_returnsAllPosts_sortedByAuditDesc() throws Exception {
+        // given
+        User user = usersRepository.findByUsername("user");
+        // and
+        Post post1 = new Post("post1", "test", user);
+        post1.getAudit().setCreated(LocalDateTime.now().minusDays(1));
+        // and
+        Post post2 = new Post("post2", "test", user);
+        post2.getAudit().setCreated(LocalDateTime.now());
+        // and
+        Post post3 = new Post("post3", "test", user);
+        post3.getAudit().setCreated(LocalDateTime.now().plusDays(1));
+        // and
+        Post post4 = new Post("post4", "test", user);
+        post4.getAudit().setCreated(LocalDateTime.now().minusDays(2));
+
+        postRepository.save(post1);
+        postRepository.save(post2);
+        postRepository.save(post3);
+        postRepository.save(post4);
+
+        // when + then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts"))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(model().attribute("posts", hasSize(3)))
+                .andExpect(model().attribute("posts", containsInRelativeOrder(post3, post2, post1)))
+                .andExpect(model().attributeExists("titleSearchPost"))
+                .andExpect(model().attribute("currentPage", is(0)))
+                .andExpect(model().attribute("pageNum", is(2)))
+                .andExpect(view().name("post-list"));
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/page/1"))
+                .andExpect(model().attribute("posts", hasSize(1)))
+                .andExpect(model().attribute("posts", contains(post4)))
+                .andExpect(model().attributeExists("titleSearchPost"))
+                .andExpect(model().attribute("currentPage", is(1)))
+                .andExpect(model().attribute("pageNum", is(2)))
+                .andExpect(view().name("post-list"));
+
     }
 
 

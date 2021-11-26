@@ -9,6 +9,7 @@ import io.github.bodzisz.repository.PostRepository;
 import io.github.bodzisz.repository.RoleRepository;
 import io.github.bodzisz.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -27,6 +28,9 @@ public class TestConfig {
 
     @Autowired
     UserDetailsService userDetailsService;
+
+    @Value("${page.size}")
+    private int pageSize;
 
     @Bean
     @Primary
@@ -51,7 +55,9 @@ public class TestConfig {
 
             @Override
             public List<Post> findAll(Sort sort) {
-                return null;
+                return map.values().stream()
+                        .sorted(Comparator.comparing(Post::getCreationTime))
+                        .collect(Collectors.toList());
             }
 
             @Override
@@ -81,7 +87,29 @@ public class TestConfig {
 
             @Override
             public Page<Post> findAll(Pageable pageable) {
-                Page<Post> page = new PageImpl<Post>(new ArrayList<>(map.values()),
+                List<Post> list = new ArrayList<>(map.values());
+                list = list.stream()
+                        .sorted((o1, o2) -> {
+                            if(o1.getAudit().getCreated() == null || o2.getAudit().getCreated() == null) {
+                                return 1;
+                            }
+                            else {
+                                return o1.getAudit().getCreated().compareTo(o2.getAudit().getCreated());
+                            }
+                        })
+                        .collect(Collectors.toCollection(ArrayList::new));
+                Collections.reverse(list);
+                int from = pageSize * (pageable.getPageNumber());
+                int to = from + pageSize;
+                if(from >= list.size()) {
+                    from = 0;
+                    to = list.size() - 1;
+                }
+                else if(to >= list.size()) {
+                    to = list.size();
+                }
+                list = list.subList(from, to);
+                Page<Post> page = new PageImpl<Post>(list,
                         pageable,
                         map.size());
                 return page;
