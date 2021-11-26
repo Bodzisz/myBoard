@@ -7,7 +7,7 @@ import javax.persistence.PreUpdate;
 import java.time.LocalDateTime;
 
 @Embeddable
-class Audit implements Comparable {
+public class Audit implements Comparable {
     @Column(updatable = false)
     private LocalDateTime created;
     private LocalDateTime updated;
