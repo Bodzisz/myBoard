@@ -151,9 +151,9 @@
 <!--                    </div>-->
 
                     <div class="row">
-                        <div th:text="${comment.content}" class="col-8 textWrap"></div>
-                        <div th:text="${comment.user.username}" class="text-success col-1"></div>
-                        <div class="col-1">
+                        <div th:text="${comment.content}" class="col-8 text-wrap"></div>
+                        <div th:text="${comment.user.username}"  style="word-break: break-all" class="text-success col-1 text-wrap"></div>
+                        <div class="col-1 text-wrap">
                             <a sec:authorize="${hasRole('ROLE_ADMIN') or #authentication.name.equals(#vars.comment.user.username)}"
                                th:href="@{/posts/{postId}/deleteComment/{id}(id=${comment.id}, postId=${post.id})}"
                                onclick="if(!(confirm('Are you sure you want to delete this post?'))) return false"
