@@ -111,7 +111,7 @@ public class PostControllerIntegrationTest {
                         .param("content", testContent)
                         .sessionAttr("post", new Post())
                 )
-                .andExpect(status().isCreated())
+                .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/posts"))
                 .andExpect(redirectedUrl("/posts"));
     }
@@ -132,7 +132,7 @@ public class PostControllerIntegrationTest {
                         .param("content", testContent)
                 .sessionAttr("post", new Post())
                 )
-                .andExpect(status().isCreated())
+                .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("add-post-form"))
                 .andExpect(model().attributeHasFieldErrors("post", "title"))
                 .andExpect(model().attributeHasFieldErrors("post", "content"))
@@ -157,7 +157,7 @@ public class PostControllerIntegrationTest {
                         .param("content", testContent)
                         .sessionAttr("post", new Post())
                 )
-                .andExpect(status().isCreated())
+                .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("add-post-form"))
                 .andExpect(model().attributeHasFieldErrors("post", "title"))
                 .andExpect(model().attributeHasFieldErrors("post", "content"))
@@ -187,7 +187,7 @@ public class PostControllerIntegrationTest {
                 .param("content", commentContent)
                 .sessionAttr("commentToAdd", comment)
                 .sessionAttr("id", postId))
-                .andExpect(status().isCreated())
+                .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/posts/" + postId))
                 .andExpect(redirectedUrl("/posts/" + postId))
                 .andReturn();
@@ -219,7 +219,7 @@ public class PostControllerIntegrationTest {
                         .param("content", commentContent)
                         .sessionAttr("commentToAdd", comment)
                         .sessionAttr("id", postId))
-                .andExpect(status().isCreated())
+                .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("single-post"))
                 .andExpect(model().attributeHasFieldErrors("commentToAdd", "content"))
                 .andExpect(model().attribute("commentToAdd", hasProperty("content", is(commentContent))));
@@ -247,7 +247,7 @@ public class PostControllerIntegrationTest {
                         .param("content", commentContent)
                         .sessionAttr("commentToAdd", comment)
                         .sessionAttr("id", postId))
-                .andExpect(status().isCreated())
+                .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("single-post"))
                 .andExpect(model().attributeHasFieldErrors("commentToAdd", "content"))
                 .andExpect(model().attribute("commentToAdd", hasProperty("content", is(commentContent))));

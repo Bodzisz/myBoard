@@ -70,7 +70,6 @@ public class PostController {
     }
 
     @PostMapping("/savePost")
-    @ResponseStatus(HttpStatus.CREATED)
     public String savePost(@ModelAttribute("post") @Valid Post post,
                            BindingResult result) {
         if(result.hasErrors()) {
@@ -81,7 +80,6 @@ public class PostController {
     }
 
     @PostMapping("/{id}/saveComment")
-    @ResponseStatus(HttpStatus.CREATED)
     public String savePostComment(@ModelAttribute("commentToAdd") @Valid Comment comment,
                                   BindingResult result,
                                   @PathVariable("id") int id,
